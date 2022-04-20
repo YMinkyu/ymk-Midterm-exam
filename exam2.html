@@ -1,0 +1,245 @@
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>배경 이미지</title>
+    <style>  
+
+        body
+                {
+            background: whitesmoke;
+            font-family:cursive;
+        }
+        h2{
+            font-size: 50px;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            font-weight:900;
+            color: red;
+
+        }
+
+        .container {
+            max-width: 960px;
+            margin: 30px auto;
+            padding: 20px;
+            
+            
+        }
+        /*표정 이미지를 삽입해 주세요*/
+        h1 {
+            font-size: 30px;
+            text-align: center;
+            margin: 20px 0 20px;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+            color: purple;
+            font-weight:900
+            
+            
+        }
+        /*이미지 미리보기*/
+        h1 small {
+            display: block;
+            font-size: 20px;
+            padding-top: 8px;
+            color: gray;
+            font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+        }
+
+        .avatar-upload {
+            position: relative;
+            max-width: 205px;
+            margin: 50px auto;
+        }
+
+        .avatar-upload .avatar-edit {
+            position: absolute;
+            right: 12px;
+            z-index: 1;
+            top: 10px;
+        }
+
+        .avatar-upload .avatar-edit input {
+            display: none;
+        }
+
+        .avatar-upload .avatar-edit input+label {
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            margin-bottom: 0;
+            border-radius: 100%;
+            background: #FFFFFF;
+            border: 1px solid transparent;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.12);
+            cursor: pointer;
+            font-weight: normal;
+            transition: all 0.2s ease-in-out;
+        }
+
+        .avatar-upload .avatar-edit input+label:hover {
+            background: #f1f1f1;
+            border-color: #d6d6d6;
+        }
+
+        .avatar-upload .avatar-edit input+label:after {
+            content: "\f040";
+            font-family: 'FontAwesome';
+            color: #757575;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            margin: auto;
+        }
+
+        .avatar-upload .avatar-preview {
+            width: 192px;
+            height: 192px;
+            position: relative;
+            border-radius: 100%;
+            border: 6px solid #F8F8F8;
+            box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.1);
+        }
+
+        .avatar-upload .avatar-preview>div {
+            width: 100%;
+            height: 100%;
+            border-radius: 100%;
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+    </style>
+    <script>
+        window.console = window.console || function (t) { };
+    </script>
+
+    <script>
+        if (document.location.search.match(/type=embed/gi)) {
+            window.parent.postMessage("resize", "*");
+        }
+    </script>
+</head>
+
+<body translate>
+    <style>
+    body { 
+
+        background-image: url('https://postfiles.pstatic.net/MjAyMjA0MjBfMjA3/MDAxNjUwNDUzMzg1NzY2.9angnrFa1aXOhqF7oetAMN__2kOXISowAB_8HSI4-Wkg.h32Kv0o2lLYlYcnL4cF-mJ9pjBcB3mp_jgkZnpcK_HYg.PNG.rbalsdid/images.png?type=w580'); 
+        background-repeat: no-repeat;
+        background-size: 1965px 1000px;
+        } 
+    </style>
+
+    
+    <div class="webcam-container">
+        <h2><center>표정 이미지 식별하기 프로젝트</center>
+        </h2>
+        
+    </div>
+
+    <button type="button" onclick="init()"> 시작 </button>
+    <button type="button" onclick="predict()"> 표정 예측 </button>
+    <!-- 이곳에 뷰가 나타난다.-->
+    <!--<div id="webcam-container"></div> -->
+    <div id="label-container"></div>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@1.3.1/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@0.8/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        // More API functions here:
+        // https://github.com/googlecreativelab/teachablemachine-community/tree/master/libraries/image
+
+        // the link to your model provided by Teachable Machine export panel
+        const URL = "./my_model(exam)/";
+
+        let model, webcam, labelContainer, maxPredictions;
+
+        // Load the image model and setup the webcam
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            // load the model and metadata
+            // Refer to tmImage.loadFromFiles() in the API to support files from a file picker
+            // or files from your local hard drive
+            // Note: the pose library adds "tmImage" object to your window (window.tmImage)
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            // Convenience function to setup a webcam
+            const flip = true; // whether to flip the webcam
+            /* webcam = new tmImage.Webcam(200, 200, flip); // width, height, flip
+             await webcam.setup(); // request access to the webcam
+             await webcam.play();
+             window.requestAnimationFrame(loop);
+     
+             // append elements to the DOM*/
+
+            // document.getElementById("webcam-container").appendChild(webcam.canvas); 
+
+
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) { // and class labels
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+        /*
+           async function loop() {
+               webcam.update(); // update the webcam frame
+               await predict();
+               window.requestAnimationFrame(loop);
+           }
+           */
+        // run the webcam image through the image model
+        async function predict() {
+            // predict can take in an image, video or canvas html element
+            //const prediction = await model.predict(webcam.canvas);
+            var image = document.getElementById('imagePreview')
+            const prediction = await model.predict(image, false);
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + prediction[i].probability.toFixed(2);
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+            }
+        }
+    </script>
+    <div class="webcam-container">
+        <h1> 표정 이미지를 삽입해 주세요.
+            <small>이미지 미리보기</small>
+        </h1>
+        <div class="avatar-upload">
+            <div class="avatar-edit">
+                <input type="file" id="imageUpload" accept=".png, .jpg, .jpeg">
+                <label for="imageUpload"></label>
+            </div>
+            <div class="avatar-preview">
+                <img src="data:image/png;base64,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" id="imagePreview">
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script
+        src="https://cpwebassets.codepen.io/assets/common/stopExecutionOnTimeout-1b93190375e9ccc259df3a57c1abc0e64599724ae30d7ea4c6877eb615f89387.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script id="rendered-js">
+        function readURL(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    $('#imagePreview').hide();
+                    $('#imagePreview').fadeIn(650);
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+        $("#imageUpload").change(function () {
+            readURL(this);
+        });
+    </script>
+</body>
+
+</html> 
